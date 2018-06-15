@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 // Criando a enumeração:
 enum boolean{
@@ -147,12 +149,12 @@ No* insere_na_arvore(No *no,int valor){
 	return no;//retorna no que foi inserido
 }
 //função para mostrar a árvore
-void mostra_arvore(No *no){
+void in_ordem(No *no){
 	//verifica se o ramo não está vazio
 	if(no != NULL){
-		mostra_arvore(no->esquerda);
+		in_ordem(no->esquerda);
 		printf("Valor = %d F = %d\n",no->valor,fator_balanceamento(no));
-		mostra_arvore(no->direita);
+		in_ordem(no->direita);
 	}
 }
 //função para verificar se a árvore está vazia
@@ -318,19 +320,57 @@ void draw_arvore_hor(No *arvore)
     //initial depth is 0
     desenha_arvore_horiz(arvore, 0, path, 0);
 }
+void le_arquivo(char url[],Arvore *arvore){
+	FILE *arquivo; //ponteiro para abrir arquivo
+	arquivo=fopen(url,"r");//abre arquivo em modo de leitura
+	char string[999];
+	int valor = 0;
+	if(arquivo == NULL ){
+		printf("O arquivo não foi aberto corretamente\n");
+		return;
+	}
+	while(!feof(arquivo)){
+		fscanf(arquivo,"%[^ ]s",string);
+		getc(arquivo);//pula espaco
+		if(feof(arquivo)){//se fim do arquivo
+			break;
+		}
+		if(strcmp(string, "INCLUI") == 0){
+			fscanf(arquivo,"%d",&valor);
+			arvore->raiz = insere_na_arvore(arvore->raiz,valor);
+			getc(arquivo);//pula \n
+		}else if(strcmp(string, "EXCLUI") == 0){
+			fscanf(arquivo,"%d",&valor);
+			arvore->raiz = remove_arvore(arvore->raiz,valor);
+			getc(arquivo);//pula \n
+		}else if(strcmp(string, "IMPRIME") == 0){
+			fscanf(arquivo,"%[^\n]s",string);
+			if(strcmp(string, "INORDEM") == 0){
+				in_ordem(arvore->raiz);
+			}else if(strcmp(string, "POSORDEM") == 0){
 
+			}else if(strcmp(string, "PREORDEM") == 0){
 
+			}else if(strcmp(string, "BONITO") == 0){
 
+			}
+			getc(arquivo);//pula \n
+		}
+		else if(strcmp(string, "BUSCA") == 0){
+			fscanf(arquivo,"%d",&valor);
+			No *aux = verifica_se_existe_valor_arvore(arvore->raiz, valor);
+			if(aux!=NULL){
+				printf("%d\n",aux->valor);
+			}else{
+				printf("Elemento %d não encontrado\n",valor);
+			}
+			getc(arquivo);//pula \n
+		}
+	}
+}
 int main(){
 	Arvore *arvore = cria_arvore();
-	arvore->raiz = insere_na_arvore(arvore->raiz,1);
-	arvore->raiz = insere_na_arvore(arvore->raiz,2);
-	arvore->raiz = insere_na_arvore(arvore->raiz,3);
-	arvore->raiz = insere_na_arvore(arvore->raiz,4);
-	arvore->raiz = insere_na_arvore(arvore->raiz,5);
-	arvore->raiz = insere_na_arvore(arvore->raiz,6);
-	arvore->raiz = insere_na_arvore(arvore->raiz,7);
-	arvore->raiz = insere_na_arvore(arvore->raiz,8);
+	le_arquivo("entrada.txt",arvore);
 	
 	draw_arvore_hor(arvore->raiz);
 	
