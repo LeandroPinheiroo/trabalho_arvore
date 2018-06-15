@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define espaco 5
 
 // Criando a enumeração:
 enum boolean{
     true = 1, false = 0
 };
 typedef  enum boolean  bool;
-
 
 //estrutura para representar folhas
 typedef struct NO{
@@ -149,12 +149,28 @@ No* insere_na_arvore(No *no,int valor){
 	return no;//retorna no que foi inserido
 }
 //função para mostrar a árvore
-void in_ordem(No *no){
+void in_ordem_arquivo(No *no, FILE *arquivo){
 	//verifica se o ramo não está vazio
 	if(no != NULL){
-		in_ordem(no->esquerda);
-		printf("Valor = %d F = %d\n",no->valor,fator_balanceamento(no));
-		in_ordem(no->direita);
+		in_ordem_arquivo(no->esquerda,arquivo);
+		fprintf(arquivo, "(%d)",no->valor);
+		in_ordem_arquivo(no->direita,arquivo);
+	}
+}
+void pre_ordem_arquivo(No *no,FILE *arquivo){
+	//verifica se o ramo não está vazio
+	if(no != NULL){
+		fprintf(arquivo, "(%d)",no->valor);
+		pre_ordem_arquivo(no->esquerda,arquivo);
+		pre_ordem_arquivo(no->direita,arquivo);
+	}
+}
+void pos_ordem_arquivo(No *no,FILE *arquivo){
+	//verifica se o ramo não está vazio
+	if(no != NULL){
+		pos_ordem_arquivo(no->esquerda,arquivo);
+		pos_ordem_arquivo(no->direita,arquivo);
+		fprintf(arquivo, "(%d)",no->valor);
 	}
 }
 //função para verificar se a árvore está vazia
@@ -242,18 +258,8 @@ No* remove_arvore(No* no,int valor){
    // }
 	return(no);//retorna no 
 }
-// A função auxiliar imprimeNo imprime o caracter
-// c precedido de 3b espaços e seguido de uma mudança
-// de linha.
-void imprimeNo(char c, int b) {
-    int i;
-    for (i = 0; i < b; i++) printf("   ");
-    printf("%d\n", c);
-}
-#define espaco 5
 
-
-void desenha_arvore_horiz(No *arvore, int depth, char *path, int direita)
+void desenha_arvore_horiz(No *arvore, FILE *arq ,int depth, char *path, int direita)
 {
     // stopping condition
     if (arvore== NULL)
@@ -263,7 +269,7 @@ void desenha_arvore_horiz(No *arvore, int depth, char *path, int direita)
     depth++;
 
     // start with direita no
-    desenha_arvore_horiz(arvore->direita, depth, path, 1);
+    desenha_arvore_horiz(arvore->direita,arq, depth, path, 1);
 
     // set | draw map
     path[depth-2] = 0;
@@ -275,54 +281,55 @@ void desenha_arvore_horiz(No *arvore, int depth, char *path, int direita)
         path[depth-1] = 1;
 
     // print root after spacing
-    printf("\n");
+    fprintf(arq,"\n");
 
     for(int i=0; i<depth-1; i++)
     {
       if(i == depth-2)
-          printf("+");
+          fprintf(arq,"+");
       else if(path[i])
-          printf("|");
+          fprintf(arq,"|");
       else
-          printf(" ");
+          fprintf(arq," ");
 
       for(int j=1; j<espaco; j++)
       if(i < depth-2)
-          printf(" ");
+          fprintf(arq," ");
       else
-          printf("-");
+          fprintf(arq,"-");
     }
 
-    printf("%d\n", arvore->valor);
+    fprintf(arq,"%d\n", arvore->valor);
 
     // vertical espacors below
     for(int i=0; i<depth; i++)
     {
       if(path[i])
-          printf("|");
+         fprintf(arq,"|");
       else
-          printf(" ");
+          fprintf(arq," ");
 
       for(int j=1; j<espaco; j++)
-          printf(" ");
+          fprintf(arq," ");
     }
 
     // go to esquerda no
-    desenha_arvore_horiz(arvore->esquerda, depth, path, 0);
+    desenha_arvore_horiz(arvore->esquerda, arq,depth, path, 0);
 }
 
 //primary fuction
-void draw_arvore_hor(No *arvore)
+void draw_arvore_hor(No *arvore,FILE *arq)
 {
     // should check if we don't exceed this somehow..
     char path[255] = {};
 
     //initial depth is 0
-    desenha_arvore_horiz(arvore, 0, path, 0);
+    desenha_arvore_horiz(arvore,arq, 0, path, 0);
 }
-void le_arquivo(char url[],Arvore *arvore){
-	FILE *arquivo; //ponteiro para abrir arquivo
-	arquivo=fopen(url,"r");//abre arquivo em modo de leitura
+void le_arquivo(char url_entrada[],char url_saida[],Arvore *arvore){
+	FILE *arquivo; //ponteiro para abrir arquivo de entrada
+	FILE *arquivo_saida; //ponteiro para abrir arquivo de saida
+	arquivo=fopen(url_entrada,"r");//abre arquivo em modo de leitura
 	char string[999];
 	int valor = 0;
 	if(arquivo == NULL ){
@@ -344,35 +351,66 @@ void le_arquivo(char url[],Arvore *arvore){
 			arvore->raiz = remove_arvore(arvore->raiz,valor);
 			getc(arquivo);//pula \n
 		}else if(strcmp(string, "IMPRIME") == 0){
+			arquivo_saida=fopen(url_saida,"a+");//abre arquivo em modo de leitura e escrita
 			fscanf(arquivo,"%[^\n]s",string);
 			if(strcmp(string, "INORDEM") == 0){
-				in_ordem(arvore->raiz);
+				fprintf(arquivo_saida, "<");
+				in_ordem_arquivo(arvore->raiz,arquivo_saida);
+				fprintf(arquivo_saida,">\n");
 			}else if(strcmp(string, "POSORDEM") == 0){
-
+				fprintf(arquivo_saida, "<");
+				pos_ordem_arquivo(arvore->raiz,arquivo_saida);
+				fprintf(arquivo_saida,">\n");
 			}else if(strcmp(string, "PREORDEM") == 0){
-
+				fprintf(arquivo_saida, "<");
+				pre_ordem_arquivo(arvore->raiz,arquivo_saida);
+				fprintf(arquivo_saida,">\n");
 			}else if(strcmp(string, "BONITO") == 0){
-
+				draw_arvore_hor(arvore->raiz,arquivo_saida);
+				fprintf(arquivo_saida, "\n");
 			}
+			fclose(arquivo_saida);
 			getc(arquivo);//pula \n
 		}
 		else if(strcmp(string, "BUSCA") == 0){
+			arquivo_saida=fopen(url_saida,"a+");//abre arquivo em modo de leitura e escrita
 			fscanf(arquivo,"%d",&valor);
 			No *aux = verifica_se_existe_valor_arvore(arvore->raiz, valor);
 			if(aux!=NULL){
-				printf("%d\n",aux->valor);
+				fprintf(arquivo_saida,"%d\n",aux->valor);
 			}else{
-				printf("Elemento %d não encontrado\n",valor);
+				fprintf(arquivo_saida,"Elemento %d não encontrado\n",valor);
 			}
+			getc(arquivo);//pula \n
+			fclose(arquivo_saida);
+		}else if(strcmp(string, "FIM") == 0){
+			return;
+		}else{
+			fscanf(arquivo,"%[^\n]s",string);
 			getc(arquivo);//pula \n
 		}
 	}
+	fclose(arquivo);
 }
-int main(){
-	Arvore *arvore = cria_arvore();
-	le_arquivo("entrada.txt",arvore);
-	
-	draw_arvore_hor(arvore->raiz);
-	
-	return(0);
+int main(int argc, char const *argv[]){
+	char arquivo_entrada[999];//declara url para receber entrada do arquivo
+	char arquivo_saida[999];//declara url para receber saida do arquivo
+	if(argc < 3){//caso argumentos menor que 3
+		if(argc == 1){//caso tenha passado apenas um argumento
+			printf("Não foi passado o arquivo contendo os dados de entrada\n");//Mostra erro
+			return false;//sai do Main
+		}
+		printf("Nao foi passado nome do arquivo de saida, sera gerado um nome padrao\n");//mostra alerta
+	}
+	strcpy(arquivo_entrada,argv[1]);//copia arquivo de entrada para a URL
+	if(argc < 3){//caso nao tenha passado o argumento para o nome de saida
+		strcpy(arquivo_saida,"Saida.txt");//coloca um nome padrao para evitar erros
+	}else{
+		strcpy(arquivo_saida,argv[2]);//caso tenha passado o nome do arquivo de de saida utiliza o nome que o usuario passou
+	}
+	Arvore *arvore;
+	arvore = cria_arvore();
+	le_arquivo(arquivo_entrada,arquivo_saida,arvore);
+	//Falta destruir arvore
+	return true;
 }
