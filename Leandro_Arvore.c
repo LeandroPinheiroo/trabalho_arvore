@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 // Criando a enumeração:
-enum boolean {
+enum boolean{
     true = 1, false = 0
 };
 typedef  enum boolean  bool;
@@ -29,7 +29,7 @@ Arvore* cria_arvore(){
 	seta_vazia(t);//aponta para null para evitar erros
 	return(t);//retora arvore criada
 }
-
+//funcao responsavel por verificar a altura da arvore ou se necessario de algum no
 int altura(No *raiz) {//calcula altura da arvore
    if (raiz == NULL){//caso raiz seja null
       return false; // altura da árvore vazia
@@ -45,10 +45,10 @@ int fator_balanceamento(No *raiz){//funcao responsavel por calcular o fator de b
 	if (raiz == NULL){//caso raiz seja null
       return false; // árvore vazia
 	}
-   int fator = altura(raiz->esquerda) - altura(raiz->direita);//calcula o valor fo fator de balanceamento
+   int fator = altura(raiz->esquerda) - altura(raiz->direita);//calcula o valor fo fator de balanceamento(valor da altura a esquerda - altura a direita)
    return fator;//retorna o valor do fator
 }
-
+//funcao responsavel por calcular o grau de algum no
 int verifica_grau(No *raiz){//Calcula grau de um determinado NO
 	if(raiz->direita == NULL && raiz->esquerda == NULL){//se direita e esquerda null
 		return 0;//retorna 0
@@ -61,53 +61,52 @@ int verifica_grau(No *raiz){//Calcula grau de um determinado NO
 	}
 	return 2;//caso contrario retorna 2
 }
-
+//Funcao responsavel por verificar o nivel de algum valor da arvore
 int verifica_nivel_no(No *no, int valor){
-	int nivel = 0;
-	while(no != NULL){
-		if(valor > no->valor){ //Se o elemento for maior que a raiz vai para a direita
-			no = no->direita;
-			nivel++;
-		}else{
-			if(valor < no->valor){ //Se o elemento for menor que a raiz vai para a esquerda
-				no = no->esquerda;
-				nivel++;
-			}else{ 	
-				//Achou o valor
-				return nivel;
-			}
+	int nivel = 0;//contador de nivel
+	while(no != NULL){//repte ate que o no aponte para NULL
+		if(valor > no->valor){ //Se o elemento for maior que a raiz percorre para a direita
+			no = no->direita;//no recebe a direita
+			nivel++;//soma um no contador de nivel
+		}else if(valor < no->valor){ //Se o elemento for menor que a raiz vai para a esquerda
+			no = no->esquerda;//recebe no da esquerda
+			nivel++;//soma no contador
+		}else{//caso contrario
+			//indica que encontrou o valor
+			return nivel;//retorna o nivel do elemento
 		}
 	}
+	return false;//retorna false indicando que o elemento nao esta na arvore
 }
 
-No* rotacaoEsquerda(No *no){//LL
-    No *q = no->direita;
-    No *temp = q->esquerda;
-	q->esquerda = no;
-	no->direita = temp;
-	return q;
+No* rotacaoEsquerda(No *no){//Rotacao a esquerda
+    No *q = no->direita;//auxiliar 1 recebe o no a direita do passado
+    No *temp = q->esquerda;//auxiliar 2 recebe no a esquerda do auxiliar 1 
+	q->esquerda = no;//a esquerda do auxiliar 1 passa a ser o no recebido 
+	no->direita = temp;//no a direita do passado passa a ser o auxiliar 2
+	return q;//retorna o novo no
 }
 
-No* rotacaoDireita(No *no){//RR
-	No *q = no->esquerda;
-    No *temp = q->direita;
-	q->direita = no;
-	no->esquerda = temp;
- 	return q;
+No* rotacaoDireita(No *no){//Rotacao a direita
+	No *q = no->esquerda;////auxiliar 1 recebe o no a esquerda do passado
+    No *temp = q->direita;//auxiliar 2 recebe no a direita do auxiliar 1 
+	q->direita = no;//a direita do auxiliar 1 passa a ser o no recebido 
+	no->esquerda = temp;//no a esquerda do passado passa a ser o auxiliar 2
+ 	return q;//retorna o novo no
 }
 
-No* rotacaoDE(No *no){//LR
-	No *aux;
-    aux = rotacaoDireita(no->esquerda);
-    aux =rotacaoEsquerda(no);
-	return aux;
+No* rotacaoDE(No *no){//Rotacao direita depois esquerda
+	No *aux;//cria auxiliar para receber retornos da funcao
+    aux = rotacaoDireita(no->esquerda);//rotaciona o no da esquerda para a direita
+    aux =rotacaoEsquerda(no);//rotaciona o no recebido a esquerda
+	return aux;//retorna no
 }
 
-No* RotacaoED(No *no){//RL
-	No *aux;
-    aux = rotacaoEsquerda(no->direita);
-    aux = rotacaoDireita(no);
-	return aux;
+No* RotacaoED(No *no){//Rotacao a esquerda depois direita
+	No *aux;//cria auxiliar para receber retornos da funcao
+    aux = rotacaoEsquerda(no->direita);//rotaciona o no da direita para a esquerda
+    aux = rotacaoDireita(no);//rotaciona o no recebido a direita
+	return aux;//retorna o no
 }
 
 
@@ -131,24 +130,20 @@ No* insere_na_arvore(No *no,int valor){
 	//se não for menor, vai para a direita
 	else if(valor > no->valor){
 		no->direita = insere_na_arvore(no->direita,valor);
-	}else{
-        return no;
+	}else{//caso contrario indica que eh um elemento existente e nao insere o mesmo
+        return no;//apenas retorna o no
     }
-	if(fator_balanceamento(no) > 1){
-        return rotacaoDireita(no);
+	if(fator_balanceamento(no) > 1){//caso fator balancemaneto maior que 1
+        return rotacaoDireita(no);//rotaciona a direita e retorna o no
     }
-	else if(fator_balanceamento(no) < -1 ){
-        return rotacaoEsquerda(no);
+	else if(fator_balanceamento(no) < -1 ){//caso fator de balanceamento menor q -1
+        return rotacaoEsquerda(no);//rotaciona a esquerda e retorna o no
     }
-	else if(fator_balanceamento(no) > 1 ){
-        //no->esquerda = rotacaoEsquerda(no->esquerda);
-        //return rotacaoDireita(no);
-		return RotacaoED(no);
-    }else if(fator_balanceamento(no) < -1 ){
-		return rotacaoDE(no);
-        //no->direita = rotacaoDireita(no->direita);
-        //return rotacaoEsquerda(no);
-    }
+	//else if(fator_balanceamento(no) > 1 ){
+	//	return RotacaoED(no);
+    //}else if(fator_balanceamento(no) < -1 ){
+	//	return rotacaoDE(no);
+    //}
 	return no;//retorna no que foi inserido
 }
 //função para mostrar a árvore
@@ -156,7 +151,7 @@ void mostra_arvore(No *no){
 	//verifica se o ramo não está vazio
 	if(no != NULL){
 		mostra_arvore(no->esquerda);
-		printf("%i\n",no->valor);
+		printf("Valor = %d F = %d\n",no->valor,fator_balanceamento(no));
 		mostra_arvore(no->direita);
 	}
 }
@@ -232,27 +227,112 @@ No* remove_arvore(No* no,int valor){
 			no->esquerda = remove_arvore(no->esquerda,valor);//chama funcao rescursiva para remover
 		}
 	}
+	if(fator_balanceamento(no) > 1){
+        return rotacaoDireita(no);
+    }
+	else if(fator_balanceamento(no) < -1 ){
+        return rotacaoEsquerda(no);
+    }
+	//else if(fator_balanceamento(no) > 1 ){
+	//	return RotacaoED(no);
+   // }else if(fator_balanceamento(no) < -1 ){
+		//return rotacaoDE(no);
+   // }
 	return(no);//retorna no 
 }
+// A função auxiliar imprimeNo imprime o caracter
+// c precedido de 3b espaços e seguido de uma mudança
+// de linha.
+void imprimeNo(char c, int b) {
+    int i;
+    for (i = 0; i < b; i++) printf("   ");
+    printf("%d\n", c);
+}
+#define espaco 5
+
+
+void desenha_arvore_horiz(No *arvore, int depth, char *path, int direita)
+{
+    // stopping condition
+    if (arvore== NULL)
+        return;
+
+    // increase spacing
+    depth++;
+
+    // start with direita no
+    desenha_arvore_horiz(arvore->direita, depth, path, 1);
+
+    // set | draw map
+    path[depth-2] = 0;
+
+    if(direita)
+        path[depth-2] = 1;
+
+    if(arvore->esquerda)
+        path[depth-1] = 1;
+
+    // print root after spacing
+    printf("\n");
+
+    for(int i=0; i<depth-1; i++)
+    {
+      if(i == depth-2)
+          printf("+");
+      else if(path[i])
+          printf("|");
+      else
+          printf(" ");
+
+      for(int j=1; j<espaco; j++)
+      if(i < depth-2)
+          printf(" ");
+      else
+          printf("-");
+    }
+
+    printf("%d\n", arvore->valor);
+
+    // vertical espacors below
+    for(int i=0; i<depth; i++)
+    {
+      if(path[i])
+          printf("|");
+      else
+          printf(" ");
+
+      for(int j=1; j<espaco; j++)
+          printf(" ");
+    }
+
+    // go to esquerda no
+    desenha_arvore_horiz(arvore->esquerda, depth, path, 0);
+}
+
+//primary fuction
+void draw_arvore_hor(No *arvore)
+{
+    // should check if we don't exceed this somehow..
+    char path[255] = {};
+
+    //initial depth is 0
+    desenha_arvore_horiz(arvore, 0, path, 0);
+}
+
 
 
 int main(){
 	Arvore *arvore = cria_arvore();
-	arvore->raiz = insere_na_arvore(arvore->raiz,4);
-	arvore->raiz = insere_na_arvore(arvore->raiz,2);
-	arvore->raiz = insere_na_arvore(arvore->raiz,6);
 	arvore->raiz = insere_na_arvore(arvore->raiz,1);
+	arvore->raiz = insere_na_arvore(arvore->raiz,2);
 	arvore->raiz = insere_na_arvore(arvore->raiz,3);
+	arvore->raiz = insere_na_arvore(arvore->raiz,4);
 	arvore->raiz = insere_na_arvore(arvore->raiz,5);
-	arvore->raiz = insere_na_arvore(arvore->raiz,14);
+	arvore->raiz = insere_na_arvore(arvore->raiz,6);
 	arvore->raiz = insere_na_arvore(arvore->raiz,7);
-	arvore->raiz = insere_na_arvore(arvore->raiz,15);
-	arvore->raiz = insere_na_arvore(arvore->raiz,13);
-
-
+	arvore->raiz = insere_na_arvore(arvore->raiz,8);
 	
-
-	mostra_arvore(arvore->raiz);
+	draw_arvore_hor(arvore->raiz);
 	
 	return(0);
 }
