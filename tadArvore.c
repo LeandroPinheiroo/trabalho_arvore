@@ -1,11 +1,12 @@
 #include "tadArvore.h"
 #include <stdio.h>
 #include <stdlib.h>
+//includes 
 
-#define false 0
-#define true 1
+#define false 0 //representar Boolean False
+#define true 1//boolean true
 #define espaco 5
-
+//constantes 
 
 //função para iniciar a árvore vazia
 void seta_vazia(Arvore *t){
@@ -14,7 +15,7 @@ void seta_vazia(Arvore *t){
 //função para criar a árvore
 Arvore* cria_arvore(){
 	Arvore *t = (Arvore*)malloc(sizeof(struct ARVORE));//aloca na memoria
-	seta_vazia(t);//aponta para null para evitar erros
+	seta_vazia(t);//chama funcao
 	return(t);//retora arvore criada
 }
 //funcao responsavel por verificar a altura da arvore ou se necessario de algum no
@@ -97,7 +98,6 @@ No* RotacaoED(No *no){//Rotacao a esquerda depois direita
 	return aux;//retorna o no
 }
 
-
 //função para inserir na árvore
 No* insere_na_arvore(No *no,int valor){
 	//se o ramo estiver vazio
@@ -138,25 +138,25 @@ No* insere_na_arvore(No *no,int valor){
 void in_ordem_arquivo(No *no, FILE *arquivo){
 	//verifica se o ramo não está vazio
 	if(no != NULL){
-		in_ordem_arquivo(no->esquerda,arquivo);
-		fprintf(arquivo, "(%d)",no->valor);
-		in_ordem_arquivo(no->direita,arquivo);
+		in_ordem_arquivo(no->esquerda,arquivo);//chama todos a  esquerda
+		fprintf(arquivo, "(%d)",no->valor);//printa o no arquivo
+		in_ordem_arquivo(no->direita,arquivo);//chama a direita 
 	}
 }
 void pre_ordem_arquivo(No *no,FILE *arquivo){
 	//verifica se o ramo não está vazio
 	if(no != NULL){
-		fprintf(arquivo, "(%d)",no->valor);
-		pre_ordem_arquivo(no->esquerda,arquivo);
-		pre_ordem_arquivo(no->direita,arquivo);
+		fprintf(arquivo, "(%d)",no->valor);//printa valor no arquivo
+		pre_ordem_arquivo(no->esquerda,arquivo);//chama todos a esquerda
+		pre_ordem_arquivo(no->direita,arquivo);//chama a direita
 	}
 }
 void pos_ordem_arquivo(No *no,FILE *arquivo){
 	//verifica se o ramo não está vazio
 	if(no != NULL){
-		pos_ordem_arquivo(no->esquerda,arquivo);
-		pos_ordem_arquivo(no->direita,arquivo);
-		fprintf(arquivo, "(%d)",no->valor);
+		pos_ordem_arquivo(no->esquerda,arquivo);//chama todos a esquerda
+		pos_ordem_arquivo(no->direita,arquivo);//chama a direita
+		fprintf(arquivo, "(%d)",no->valor);//printa valor no arquivo
 	}
 }
 //função para verificar se a árvore está vazia
@@ -172,7 +172,7 @@ boolean verifica_vazia(Arvore *t){
 No* verifica_se_existe_valor_arvore(No *no, int valor){
 	//se o a raiz já estiver em NULL, já retorna null direto
 	if(no == NULL){
-		return NULL;	
+		return NULL;//retorna null indicando que nao existe valor
 	}
 	//se o valor da raiz for maior que o valor passado por parâmetro
 	else if(no->valor > valor){
@@ -184,8 +184,8 @@ No* verifica_se_existe_valor_arvore(No *no, int valor){
 		//vai para o lado direito da árvore
 		return verifica_se_existe_valor_arvore(no->direita,valor);
 	}
-	else{
-		return no;
+	else{//se nao
+		return no;//retorna no
 	}
 }
 //função para remover um valor especifíco da árvore
@@ -227,15 +227,15 @@ No* remove_arvore(No* no,int valor){
 				aux2 = aux2->direita;//auxiliar 2 vai para a direita ao maiximo
 			}
 			no->valor = aux2->valor;//troca os valores
-			aux2->valor = valor;
+			aux2->valor = valor;//troca valor de 
 			no->esquerda = remove_arvore(no->esquerda,valor);//chama funcao rescursiva para remover
 		}
 	}
-	if(fator_balanceamento(no) > 1){
-        return rotacaoDireita(no);
+	if(fator_balanceamento(no) > 1){//verifica balanceamento se é maior que 1
+        return rotacaoDireita(no);//chama rotacao a direita no no e retorna o no 
     }
-	else if(fator_balanceamento(no) < -1 ){
-        return rotacaoEsquerda(no);
+	else if(fator_balanceamento(no) < -1 ){//verifica se balanceamento é menor que -1
+        return rotacaoEsquerda(no);//chama rotacao a esquerda do no e retorna
     }
 	//else if(fator_balanceamento(no) > 1 ){
 	//	return RotacaoED(no);
@@ -244,18 +244,18 @@ No* remove_arvore(No* no,int valor){
    // }
 	return(no);//retorna no 
 }
-
+//funcao responsavel por remover todos os nos da arvore e apagar a mesma
 boolean apaga_arvore(Arvore *arvore){
-	if(verifica_vazia(arvore) == false){
-		while(arvore->raiz != NULL){
-			arvore->raiz = remove_arvore(arvore->raiz,arvore->raiz->valor);
+	if(verifica_vazia(arvore) == false){//caso a arvore nao esteja vazia
+		while(arvore->raiz != NULL){//equanto o no raiz da arvore nao for null
+			arvore->raiz = remove_arvore(arvore->raiz,arvore->raiz->valor);//remove a raiz e pega a nova raiz
 		}
-		seta_vazia(arvore);
-		free(arvore);
-		return true;	
-	}
-	free(arvore);
-	return true;
+		seta_vazia(arvore);//seta a arvore como vazia
+		free(arvore);//libera o ponteiro de arvore
+		return true;//retorna true indicando que arvore foi apagada com sucesso
+	}//caso arvore esteja vazia
+	free(arvore);//libera o ponteiro
+	return true;//retorna true
 }
 
 void desenha_arvore_horiz(No *arvore, FILE *arq ,int depth, char *path, int direita)

@@ -3,19 +3,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef int boolean;
+typedef int boolean;//simula tipo boolean
 
 //estrutura para representar folhas
 typedef struct NO{
-	int valor;
-	struct NO *direita;
-	struct NO *esquerda;
-}No;
+	int valor;//representa valor
+	struct NO *direita;//no a direita
+	struct NO *esquerda;//no a esquerda
+}No;//typedef de No para facilitar 
 //estrutura para representar arvore
 typedef struct ARVORE{
 	struct NO *raiz;
 }Arvore;
-
+//Escopo de funcoes de arvore
 void seta_vazia(Arvore *t);
 Arvore* cria_arvore();
 int altura(No *raiz);

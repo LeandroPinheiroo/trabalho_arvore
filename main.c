@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "tadArvore.h"
-#include "desenvolvimento.h"
+#include <string.h>//biblioteca de string
+#include "tadArvore.h"//biblioteca de arvore
+#include "desenvolvimento.h"//biblioteca do desenvolvimento
 
-// Criando a enumeração:
+// Cenum para simular boolean
 enum boolean{
     true = 1, false = 0
 };
-typedef  enum boolean  bool;
 
 int main(int argc, char const *argv[]){
 	char arquivo_entrada[999];//declara url para receber entrada do arquivo
@@ -26,9 +25,9 @@ int main(int argc, char const *argv[]){
 	}else{
 		strcpy(arquivo_saida,argv[2]);//caso tenha passado o nome do arquivo de de saida utiliza o nome que o usuario passou
 	}
-	Arvore *arvore;
-	arvore = cria_arvore();
-	le_arquivo(arquivo_entrada,arquivo_saida,arvore);
-	apaga_arvore(arvore);
-	return true;
+	Arvore *arvore;//cria ponteiro de arvore
+	arvore = cria_arvore();//cria a arvore
+	le_arquivo(arquivo_entrada,arquivo_saida,arvore);//chama funcao que le do arquivo e executa todo o desenvolvimento do trabalho
+	apaga_arvore(arvore);//ao final chama funcao para apagar a arvore
+	return true;//retorna true
 }
