@@ -35,5 +35,5 @@ No* verifica_se_existe_valor_arvore(No *no, int valor);
 No* remove_arvore(No* no,int valor);
 void desenha_arvore_horiz(No *arvore, FILE *arq ,int depth, char *path, int direita);
 void draw_arvore_hor(No *arvore,FILE *arq);
-
+boolean apaga_arvore(Arvore *arvore);
 #endif

@@ -1,4 +1,7 @@
 #include "tadArvore.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 void le_arquivo(char url_entrada[],char url_saida[],Arvore *arvore){
 	FILE *arquivo; //ponteiro para abrir arquivo de entrada
 	FILE *arquivo_saida; //ponteiro para abrir arquivo de saida

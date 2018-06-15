@@ -29,6 +29,6 @@ int main(int argc, char const *argv[]){
 	Arvore *arvore;
 	arvore = cria_arvore();
 	le_arquivo(arquivo_entrada,arquivo_saida,arvore);
-	//Falta destruir arvore
+	apaga_arvore(arvore);
 	return true;
 }

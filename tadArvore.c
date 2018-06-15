@@ -245,6 +245,19 @@ No* remove_arvore(No* no,int valor){
 	return(no);//retorna no 
 }
 
+boolean apaga_arvore(Arvore *arvore){
+	if(verifica_vazia(arvore) == false){
+		while(arvore->raiz != NULL){
+			arvore->raiz = remove_arvore(arvore->raiz,arvore->raiz->valor);
+		}
+		seta_vazia(arvore);
+		free(arvore);
+		return true;	
+	}
+	free(arvore);
+	return true;
+}
+
 void desenha_arvore_horiz(No *arvore, FILE *arq ,int depth, char *path, int direita)
 {
     // stopping condition
