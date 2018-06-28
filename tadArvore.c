@@ -84,20 +84,6 @@ No* rotacaoDireita(No *no){//Rotacao a direita
  	return q;//retorna o novo no
 }
 
-No* rotacaoDE(No *no){//Rotacao direita depois esquerda
-	No *aux;//cria auxiliar para receber retornos da funcao
-    aux = rotacaoDireita(no->esquerda);//rotaciona o no da esquerda para a direita
-    aux =rotacaoEsquerda(no);//rotaciona o no recebido a esquerda
-	return aux;//retorna no
-}
-
-No* RotacaoED(No *no){//Rotacao a esquerda depois direita
-	No *aux;//cria auxiliar para receber retornos da funcao
-    aux = rotacaoEsquerda(no->direita);//rotaciona o no da direita para a esquerda
-    aux = rotacaoDireita(no);//rotaciona o no recebido a direita
-	return aux;//retorna o no
-}
-
 //função para inserir na árvore
 No* insere_na_arvore(No *no,int valor){
 	//se o ramo estiver vazio
@@ -121,17 +107,18 @@ No* insere_na_arvore(No *no,int valor){
 	}else{//caso contrario indica que eh um elemento existente e nao insere o mesmo
         return no;//apenas retorna o no
     }
-	if(fator_balanceamento(no) > 1){//caso fator balancemaneto maior que 1
+	if(fator_balanceamento(no) > 1 && valor < no->esquerda->valor){//caso fator balancemaneto maior que 1
         return rotacaoDireita(no);//rotaciona a direita e retorna o no
     }
-	else if(fator_balanceamento(no) < -1 ){//caso fator de balanceamento menor q -1
+	else if(fator_balanceamento(no) < -1 && valor > no->direita->valor){//caso fator de balanceamento menor q -1
         return rotacaoEsquerda(no);//rotaciona a esquerda e retorna o no
+    }else if(fator_balanceamento(no) > 1 && valor > no->esquerda->valor){
+        no->esquerda = rotacaoEsquerda(no->esquerda);
+		return rotacaoDireita(no);
+    }else if(fator_balanceamento(no) < -1 && valor < no->direita->valor){
+        no->direita =  rotacaoDireita(no->direita);
+		return rotacaoEsquerda(no);
     }
-	//else if(fator_balanceamento(no) > 1 ){
-	//	return RotacaoED(no);
-    //}else if(fator_balanceamento(no) < -1 ){
-	//	return rotacaoDE(no);
-    //}
 	return no;//retorna no que foi inserido
 }
 //função para mostrar a árvore
@@ -237,11 +224,6 @@ No* remove_arvore(No* no,int valor){
 	else if(fator_balanceamento(no) < -1 ){//verifica se balanceamento é menor que -1
         return rotacaoEsquerda(no);//chama rotacao a esquerda do no e retorna
     }
-	//else if(fator_balanceamento(no) > 1 ){
-	//	return RotacaoED(no);
-   // }else if(fator_balanceamento(no) < -1 ){
-		//return rotacaoDE(no);
-   // }
 	return(no);//retorna no 
 }
 //funcao responsavel por remover todos os nos da arvore e apagar a mesma
